@@ -3,8 +3,10 @@
 from sys import path  #增加新的PATH
 path.append(r"..\\")
 import os,time,threading
-from PAR import parm
-IP = parm.Constant.IP
+from FUC import config
+import logging
+logging_recorder = logging.getLogger('main.recorder')
+
 PATH = './DLL'
 
 #报告名
@@ -18,43 +20,56 @@ def writeVariableList(verlist):
             for i in verlist:
                 f.write("%s\n"%i)   
     except Exception, e:
-        print e
+        logging_recorder.exception(str(e))
         
             
 def startRecord(verlist,casename,internal = 10, times = 300000):
     try:
+        reload(config)
         writeVariableList(verlist)
-        cmd_path = 'cmd /k cd /d %s' %PATH        
-        print "recorder open"
-        os.popen('cd "%s" & cmd /k AdsRecorder.exe  %s.1.1:801 ADS_VariableList.txt ../Recording/%s-%s.txt /interval %s /record %s ' %(PATH, IP, casename,filename(), internal, times)).read()          
+        #cmd_path = 'cmd /k cd /d %s' %PATH    
+        msg = "%s recording is started "%casename
+        logging_report.info(msg)
+        os.popen('cd "%s" & cmd /k AdsRecorder.exe  %s:%s ADS_VariableList.txt ../Recording/%s-%s.txt /interval %s /record %s ' %(PATH, config.IP,config.PORT, casename,filename(), internal, times)).read()          
         
         return True
     except Exception,e:
-        print e
+        logging_recorder.exception(str(e))
         return False
     
 def stopRecord():
-    try:
-        cmd_path = 'cmd /k cd /d %s' %PATH       
-            
+    """
+    停止录播
+    """
+    try:   
         os.popen('cd "%s" & cmd /k del *.ctrl'%(PATH)).read()          
-        print "recorder stop"
+        msg = "recording  is stoped "
+        logging_recorder.info(msg)
     except Exception,e:
-        print e
+        logging_recorder.exception(str(e))
         return False        
     
 class RecordThread(threading.Thread):
-
-    def __init__(self,threadname,verlist,casename):
+    """
+    启动录播线程
+    """
+    def __init__(self,  verlist, casename , threadname = "" ):
+        """
+        threadname 为线程名
+        varlist 为需要录播的名字
+        casename 为用例名
+        """
         self.verlist = verlist
         self.casename = casename
-
+        #调用启动录播函数
         threading.Thread.__init__(self,name=threadname)
-
+    
     def run(self):
-
+        msg = "%s recording thread is started "%self.casename
+        logging_report.info(msg)
         startRecord(self.verlist, self.casename)
-        print self.casename,'record thread is dead'
+        msg = '%s recording  thread is dead '%self.casename
+        logging_report.info(msg)
         return 
 
 

@@ -1,22 +1,20 @@
 # -*- coding: utf8 -*- 
-from sys import path  #增加新的PATH
-path.append(r"..\\")
-from FUC.function import *
+from FUC.report import report
 from FUC.error_messages import *
-from FUC import ads
-from PAR import parm
+from FUC.communication import ads
+from FUC.assertFuc import *
 import time,string
 import re
-ID_rule = '\d{2}_\d{2}_\d{3}'
-NAME_rule = '[S\O][\S]*2'
+from param import *
+
 box = assertFun()
 #仿真器使能
 def enable_simu():
-    #ads.write(parm.Simu.enable_simu_wanedir, '1') #风向
-    ads.write(parm.Simu.enable_simu_windspeed, '1') #风速
-    ads.write(parm.Simu.enable_simu_allsystem, '1') #开启仿真器
-    #ads.write(parm.Variable.SCADA_active,'1') #使能SCADA
-    reset(parm.Variable.safety_chain_reset) #安全链复位
+    #ads.write(Simu.enable_simu_wanedir, '1') #风向
+    ads.write(Simu.enable_simu_windspeed, '1') #风速
+    ads.write(Simu.enable_simu_allsystem, '1') #开启仿真器
+    #ads.write(Variable.SCADA_active,'1') #使能SCADA
+    reset(Variable.safety_chain_reset) #安全链复位
     
 #截止印记  ,入参为开始时间，截止时间
 def end_stamp(start,end):
@@ -26,7 +24,7 @@ def end_stamp(start,end):
         report("end_stamp:"+ERROR_3)#错误信息：格式错误
     try:
         data = 'use time:'+ str(usetime)  #格式整理
-        report(data) #打印至文件
+        report(data,False) #打印至文件
         #print "end_stamp:ok"
     except:
         report("end_stamp:"+ERROR_2) #打印错误至报告:文件查找错误
@@ -38,7 +36,7 @@ def end_stamp(start,end):
 def Check_Mode(data = None):
     if data != None:
         try:
-            if box.isEqual(parm.Variable.operation_mode, data):
+            if box.isEqual(Variable.operation_mode, data):
                 return True
             else:
                 report("Check_Mode Time Out")
@@ -46,7 +44,7 @@ def Check_Mode(data = None):
         except:
             report("Check_Mode:"+ERROR_1)#打印错误至报告：通讯中断      
     try:
-        if(box.isEqual(parm.Variable.operation_mode, parm.Variable.mode_GridOp)):#风机状态确认
+        if(box.isEqual(Variable.operation_mode, Variable.mode_GridOp)):#风机状态确认
             return True
         else:
             return False
@@ -60,7 +58,7 @@ def Check_Mode(data = None):
 def Check_BP(data = None):
     if data != None:
         try:
-            if box.isEqual(parm.Variable.bp_level, data):
+            if box.isEqual(Variable.bp_level, data):
                 return True
             else:
                 report("Check_BP Time Out")
@@ -68,7 +66,7 @@ def Check_BP(data = None):
         except:
             report("Check_BP"+ERROR_1)#打印错误至报告：通讯中断          
     try:
-        if(ads.read(parm.Variable.bp_level)>1):#若刹车等级大于1则确认为有刹车
+        if(ads.read(Variable.bp_level)>1):#若刹车等级大于1则确认为有刹车
             return True
         else:
             report("Check_BP Time Out")

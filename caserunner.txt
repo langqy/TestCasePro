@@ -1,0 +1,6 @@
+from casetemplate import *
+from PAR.SimuParam import *
+
+class case(CaseTemplate):
+
+    exec(open('./CASE/CASEPATH'))

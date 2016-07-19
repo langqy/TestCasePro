@@ -1,15 +1,15 @@
 # -*- coding: utf8 -*- 
 from __future__ import division
-from sys import path  #增加新的PATH
-path.append(r"..\\")
-from FUC.function import *
+from FUC.report import *
 
 
 class DivisionException(Exception):
       def __init__(self, ver,data):
             Exception.__init__ (self,ver,data)       #调用基类的__init__进行初始化
             print "writer fail"
-            report("ERROR:"+str(ver)+"__writer__"+str(data)+"__fail")
+            data = "ERROR:"+str(ver)+"__writer__"+str(data)+"__fail"
+            report(data)
+            
 
 #通讯中断
 ERROR_1 = "communication is broken"
