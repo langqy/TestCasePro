@@ -3,6 +3,7 @@
 import inspect,time
 from FUC.record import * 
 from FUC.assertFuc import *
+from FUC  import toolbox
 from FUC.toolbox import *
 import logging
 logger_casetemplate = logging.getLogger('main.casetemplate')
@@ -56,16 +57,16 @@ class  CaseTemplate():
     #启动数据记录功能， 输入为 用例名    
     def runRecorder(self, casename):
         print 'Start record'          
-        recorder = RecordThread('Recorder Thread', self.varlist, casename)
-        recorder.start()                                    #数据记录线程启动       
-        if recorder.isAlive:                                #确认线程启动
+        self.recorder = RecordThread( self.varlist, casename,'Recorder Thread')
+        self.recorder.start()                                    #数据记录线程启动       
+        if self.recorder.isAlive:                                #确认线程启动
             print 'Recorder thread is running'
         else:
             print "ERROR: The recorder thread is not running"
 
     #封装运行时间
     def runTime(self):        
-        end_stamp(self.startTime,time.time())               #计算总运行时间并写入报告
+        toolbox.end_stamp(self.startTime,time.time())               #计算总运行时间并写入报告
         report("END\n",False)
     
     #运行脚本用例程序   
@@ -77,6 +78,7 @@ class  CaseTemplate():
             setUpOK = self.setUp()                          #准备工作            
             if not setUpOK :                                #若返回false 则退出当前用例执行
                 report("%s ----Failed---setUp"%self.casename)
+                self.sign = 2
                 return False            
             ok = self.case()                                #执行用例主体   
             if ok:                
@@ -90,7 +92,7 @@ class  CaseTemplate():
             logger_casetemplate.exception(str(e))
         finally:           
             self.tearDown()                                 #还原动作            
-            stopRecord()                                    #停止录播           
+            self.stopRecord()                                #停止录播           
             self.tunBack()                                  #还原改写参数            
             self.runTime()                                  #记录运行时间
     
@@ -110,6 +112,10 @@ class  CaseTemplate():
     def getRecordeList(self):   
         self.varlist =[]
     
+    def stopRecord(self):
+        if len(self.varlist)> 0:
+            stopRecord()
+            
     #启动用例主体函数 不可修改
     def start(self,casename):
         
@@ -121,7 +127,5 @@ class  CaseTemplate():
         self.runCase()
         return self.sign
     
-
-
 
 

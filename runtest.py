@@ -32,30 +32,21 @@ def cur_file_dir():
         return os.path.dirname(path)
 
 class autotest(): 
-    def __init__(self,PATH):
-        self.PATH = PATH
-        sys.path.append(os.path.split(self.PATH)[0])
-        
     
-    def getTestList(self,filenames):       
-        namelist = []
-        for filename in filenames:
-            if filename[0] == 't'and filename[-1:] == 'y':
-                namelist.append(filename)
-        return namelist
+    
     
   
-    def runTest(self):
+    def runTest(self,casepathlist):
         through = 0
         failure = 0
         error = 0
-        filenames = os.listdir(self.PATH)
-        namelist = self.getTestList(filenames)         
         report("The_Test_Report\n",False)
         caseTemp = open('caserunner.txt').read()
-        for filename in namelist:
-            caseData = caseTemp.replace('CASEPATH',filename)           
+        for filepath in casepathlist:
+            caseData = caseTemp.replace('CASEPATH',filepath)      
+            filename = os.path.basename(filepath)
             print 'filename:',filename
+            
             with open(filename,'w') as f:
                 f.write(caseData)
             modelname = filename.replace('.py','')
@@ -72,18 +63,27 @@ class autotest():
                 error += 1
             t = None
             time.sleep(1)
-        #error = len(namelist) - through - failure
+       
                 
         report("All_Case_Complete.",False)
-        report("Total_Case_Num:%d (through/failure/error)=(%d / %d / %d)"%(len(namelist),through,failure,error),False)
+        report("Total_Case_Num:%d (through/failure/error)=(%d / %d / %d)"%(len(casepathlist),through,failure,error),False)
 
+def getTestList(casePath ,filenames):       
+    namePathlist = []
+    for filename in filenames:
+        if filename[0] == 't'and filename[-1:] == 'y':
+            namePath= os.path.join(casePath,filename).replace('\\','/')
+            namePathlist.append(namePath)
+    return namePathlist
 
 try:
     CASEPath = open('temp.txt').readline().replace('\\','/')
     print CASEPath
-    a = autotest(CASEPath) 
+    filenames = os.listdir(CASEPath)
+    casepathlist = getTestList(CASEPath,filenames)
+    a = autotest() 
     logger_main.info('\n'+'-'*50+timeSign()+'-'*50)
-    a.runTest()
+    a.runTest(casepathlist)
     logger_main.info('\n'+'-'*50+timeSign()+'-'*50)
     b = raw_input()
 except Exception,e:
