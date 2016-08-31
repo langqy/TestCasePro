@@ -5,17 +5,10 @@ from FUC.communication import ads
 from FUC.assertFuc import *
 import time,string
 import re
-from param import *
+
 
 box = assertFun()
-#仿真器使能
-def enable_simu():
-    #ads.write(Simu.enable_simu_wanedir, '1') #风向
-    ads.write(Simu.enable_simu_windspeed, '1') #风速
-    ads.write(Simu.enable_simu_allsystem, '1') #开启仿真器
-    #ads.write(Variable.SCADA_active,'1') #使能SCADA
-    reset(Variable.safety_chain_reset) #安全链复位
-    
+
 #截止印记  ,入参为开始时间，截止时间
 def end_stamp(start,end):
     try: 
@@ -29,50 +22,6 @@ def end_stamp(start,end):
     except:
         report("end_stamp:"+ERROR_2) #打印错误至报告:文件查找错误
 
-#并网状态判断，无入参时并网返回TRUE
-#示例：风机状态 = 并网发电  
-#Check_Mode()== True 
-#Check_Mode(CutIn) == False,Check_Mode(GridOp) == True
-def Check_Mode(data = None):
-    if data != None:
-        try:
-            if box.isEqual(Variable.operation_mode, data):
-                return True
-            else:
-                report("Check_Mode Time Out")
-                return False
-        except:
-            report("Check_Mode:"+ERROR_1)#打印错误至报告：通讯中断      
-    try:
-        if(box.isEqual(Variable.operation_mode, Variable.mode_GridOp)):#风机状态确认
-            return True
-        else:
-            return False
-    except:
-        report("Check_Mode:"+ERROR_2)#打印错误至报告：文件查找错误
-    
-#刹车确认，无入参时有LV1以上的刹车则报TRUE。有入参时，若刹车等级等于入参返回True
-#示例:风机BP = 50  
-#Check_BP() == False 
-#Check_BP(50) == True . Check_BP(100) == False
-def Check_BP(data = None):
-    if data != None:
-        try:
-            if box.isEqual(Variable.bp_level, data):
-                return True
-            else:
-                report("Check_BP Time Out")
-                return False
-        except:
-            report("Check_BP"+ERROR_1)#打印错误至报告：通讯中断          
-    try:
-        if(ads.read(Variable.bp_level)>1):#若刹车等级大于1则确认为有刹车
-            return True
-        else:
-            report("Check_BP Time Out")
-            return False
-    except:
-        report("Check_BP"+ERROR_2)#打印错误至报告：文件查找错误
 
 #等待延时，入参1,2 当1=2时，返回True,默认时间30S,默认步长0.5s
 #check_type:1 = ,2 >,3 < 默认模式为等于

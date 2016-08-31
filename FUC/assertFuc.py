@@ -12,9 +12,9 @@ class assertFun():
     def isTrue(self,data,port = ""):
         is_true = False    #判断输入值是否为true的返回值  is_true=true为输入值是true
         if port == '':
-            temp = ads.read(data) #读取数值
+            temp = bool(ads.read(data)) #读取数值
         else:
-            temp = ads.read(data,port)
+            temp = bool(ads.read(data,port))
         #判断
         if temp == 1: #满足条件           
             is_true = True  
@@ -24,9 +24,9 @@ class assertFun():
         is_true = False
 
         if port == '':
-            temp = ads.read(data) #读取数值
+            temp = bool(ads.read(data)) #读取数值
         else:
-            temp = ads.read(data,port)
+            temp = bool(ads.read(data,port))
 
         #print data,temp
         #判断
@@ -44,9 +44,9 @@ class assertFun():
     #查看数值是否为False并写入报告
     def isFalse(self,data,port = ""):
         if port == '':
-            temp = ads.read(data) #读取数值
+            temp = bool(ads.read(data)) #读取数值
         else:
-            temp = ads.read(data,port)
+            temp = bool(ads.read(data,port))
         is_false = False
         #判断
         if temp == 0: #满足条件           
@@ -56,9 +56,9 @@ class assertFun():
     def checkFalse(self,data,port = ""):
         is_false = False
         if port == '':
-            temp = ads.read(data) #读取数值
+            temp = bool(ads.read(data)) #读取数值
         else:
-            temp = ads.read(data,port)
+            temp = bool(ads.read(data,port))
 
         #判断
         if temp == 0: #满足条件

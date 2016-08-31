@@ -29,8 +29,10 @@ def startRecord(verlist,casename,internal = 10, times = 300000):
         writeVariableList(verlist)
         #cmd_path = 'cmd /k cd /d %s' %PATH    
         msg = "%s recording is started "%casename
-        logging_report.info(msg)
-        os.popen('cd "%s" & cmd /k AdsRecorder.exe  %s:%s ADS_VariableList.txt ../Recording/%s-%s.txt /interval %s /record %s ' %(PATH, config.IP,config.PORT, casename,filename(), internal, times)).read()          
+        logging_recorder.info(msg)
+        if not os.path.exists('Recording'):
+            os.mkdir('Recording')
+        os.popen('cd "%s" & cmd /k AdsRecorder.exe  %s.1.1:%s ADS_VariableList.txt ../Recording/%s-%s.txt /interval %s /record %s ' %(PATH, config.PLC_IP,config.PLC_PORT, casename,filename(), internal, times)).read()          
         
         return True
     except Exception,e:
@@ -66,10 +68,10 @@ class RecordThread(threading.Thread):
     
     def run(self):
         msg = "%s recording thread is started "%self.casename
-        logging_report.info(msg)
+        logging_recorder.info(msg)
         startRecord(self.verlist, self.casename)
         msg = '%s recording  thread is dead '%self.casename
-        logging_report.info(msg)
+        logging_recorder.info(msg)
         return 
 
 

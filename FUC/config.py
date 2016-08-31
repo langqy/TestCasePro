@@ -49,10 +49,24 @@ def saveConfig(option,value):
     except Exception,e:
         logger_config.warn(str(e))
     
-
-IP = getConfig('IP')
-PORT = getConfig('PORT')
-METHOD = getConfig('method')
-PLATFORM = getConfig('platForm')
-NI_IP = getConfig('NI_IP')
-NI_PORT = getConfig('NI_PORT')
+def reflashConfig():
+    global PLC_IP,PLC_PORT,METHOD,PLATFORM,NI_IP,NI_PORT,PARAMDIR
+    PLC_IP = getConfig('PLC_IP')
+    PLC_PORT = getConfig('PLC_PORT')
+    METHOD = int(getConfig('method'))
+    PLATFORM = int(getConfig('platForm'))
+    NI_IP = getConfig('NI_IP')
+    NI_PORT = getConfig('NI_PORT')
+    PARAMDIR = getConfig('PARAMDIR')
+    
+    
+def saveCurrentConfig():
+    global PLC_IP,PLC_PORT,METHOD,PLATFORM,NI_IP,NI_PORT,PARAMDIR
+    saveConfig('PLC_IP',PLC_IP)
+    saveConfig('PLC_PORT',PLC_PORT)
+    saveConfig('platForm',PLATFORM)
+    saveConfig('NI_IP',NI_IP)
+    saveConfig('NI_PORT',NI_PORT)
+    saveConfig('PARAMDIR',PARAMDIR)
+    
+reflashConfig()

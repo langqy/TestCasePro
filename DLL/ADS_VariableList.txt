@@ -1,0 +1,9 @@
+.gsDataTime
+.grGenSpeedPDM
+.grGenPowerForProcess
+.grpitchangle
+.grENVin_Blade1Setpoint
+.giTurbineOperationMode
+.grGenTorqueSetValue
+.giBPLevel
+.SCADA.StateMachine.PAR.Ctrl_Par_powerlimitfromscada

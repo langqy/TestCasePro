@@ -5,6 +5,7 @@ import logging
 logger_ads = logging.getLogger('main.ads')
 from FUC import config
 import platform
+from  PyQt4.QtGui import QMessageBox
 
 ########################################################################
 
@@ -28,14 +29,14 @@ class adsClass:
 	readFromIni  是否从config.ini文件读取配置信息 True 为读取 False 为不读取
         """
 	if readFromIni:
-	    self.IP = str(config.IP)
-	    self.PORT = str(config.PORT)
+	    self.PLC_IP = str(config.PLC_IP)
+	    self.PLC_PORT = str(config.PLC_PORT)
 	    self.method = int(config.METHOD)
 	    self.platForm = int(config.PLATFORM)
 	    self.NI_IP = str(config.NI_IP)  
 	    self.NI_PORT = int(config.NI_PORT)  
 	else:
-	    self.IP = IP
+	    self.PLC_IP = IP
 	    self.method = method
 	    self.platForm = platForm
 	    self.NI_IP = NI_IP
@@ -69,9 +70,9 @@ class adsClass:
 	    
     def read(self,name,port = ""):
 	if port  == "":
-	    self.AMS_ID = "%s:%s"%(self.IP,self.PORT)
+	    self.AMS_ID = "%s.1.1:%s"%(self.PLC_IP,self.PLC_PORT)
 	else:
-	    self.AMS_ID = "%s:%s"%(self.IP,port)	    
+	    self.AMS_ID = "%s.1.1:%s"%(self.PLC_IP,port)	    
 	name = str(name).strip()
 	if name == '':
 	    print 'the value is None' 
@@ -112,9 +113,9 @@ class adsClass:
     
     def write(self,name,data,port = ""):
 	if port  == "":
-	    self.AMS_ID = "%s:%s"%(self.IP,self.PORT)	
+	    self.AMS_ID = "%s.1.1:%s"%(self.PLC_IP,self.PLC_PORT)	
 	else:
-	    self.AMS_ID = "%s:%s"%(self.IP,port)
+	    self.AMS_ID = "%s.1.1:%s"%(self.PLC_IP,port)
 	ret = False
 	name = str(name).strip()
 	if name == '':
@@ -244,8 +245,9 @@ class adsClass:
                 name = name.strip()
                 ret = dll.AdsSingleRead(self.AMS_ID,name)  
                 dll = None
-                if ret == ";":
-                    QMessageBox.warning(self, 'WORNING', "There is no connect")  
+                if ret == ";" or ret == '':
+		    strword =  'Can not read %s.'%name
+                    logger_ads.error(strword)
                     return None
                 else:
                     dataAndType = ret.split(';')
@@ -270,7 +272,7 @@ class adsClass:
 		dll.AdsSingleRead.restype = c_char_p               
 		name = name.strip()        
 		ret = dll.AdsSingleRead(self.AMS_ID,name)  
-		if ret == ";":            
+		if ret == ";" or ret == '':            
 		    return None
 		else:
 		    dataAndType = ret.split(';')
